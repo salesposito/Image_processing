@@ -63,6 +63,8 @@ def training_data(two_training_folders=['A', 'B']):
 def training_split(data_train, target_train, test_size):
 
     X_train, X_val, y_train, y_val = train_test_split(data_train, target_train, test_size=test_size, shuffle=True)
+    print(X_train[:2])
+    exit()
     X_train = X_train.astype('float32')
     X_val = X_val.astype('float32')
     X_train = X_train / 255.0
@@ -103,64 +105,30 @@ def res_net_18():
     model.summary() 
     return model
 
-# model=res_net_18()
 
 
-# def compile_fit_model(model, model_index, X_train, y_train, X_val, y_val, trial):
-    
-#     clear_session()
-#     # timestr = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-#     # name = 'res_net_50-'+timestr #
 
-#     # checkpoint_path = "checkpoints/"+name+"/cp-{epoch:04d}.ckpt"
-#     # checkpoint_dir = os.path.dirname(checkpoint_path)
-#     # os.system('mkdir {}'.format(checkpoint_dir))
-
-#     # tensorboard_callback = TensorBoard(
-#     # log_dir='tensorboard_logs/'+name,
-#     # histogram_freq=1)
-#     # callbacks=[tensorboard_callback]
-#     lr = trial.suggest_loguniform('lr', 1e-5, 1000)
-#     val_split = trial.suggest_float('val_split', 0.1, 0.3)
-#     model.compile(optimizer = RMSprop(lr=lr), loss = 'binary_crossentropy', metrics = ['accuracy'])
-#     history = model.fit(X_train,y_train, epochs=40, verbose=1, batch_size=5, validation_split=val_split)
-#     accuracy = model.evaluate(X_val, y_val)
-#     # model.save(f"ResNet18_model_{model_index}")
-#     return history, score[1], score[0]
-
-# history=compile_fit_model(model)
-
-
-def objective(trial):
+def objective(model_index):
     clear_session()
     
-    # folders = ['A','B','C']
-    # combs = combinations(folders, r=2)
-    # training_folders = list(combs)
     
+    data_train, target_train = training_data(two_training_folders=['A', 'C'])
     
-
-    # for two_training_folders in training_folders:
-    #     model_index = str(two_training_folders[0]+two_training_folders[1])
-    #     print(model_index)
-
-    data_train, target_train = training_data(two_training_folders=['B', 'C'])
-    
-    val_split = trial.suggest_float('val_split', 0.2, 0.3)
+    val_split = 0.27507103836085595
     
     X_train, X_val, y_train, y_val  = training_split(data_train, target_train, test_size=val_split)
     model = res_net_18()
 
-    lr = trial.suggest_float('lr', 1e-5, 1e-3)
+    lr = 1.9057811424398227e-05
     
-    epochs = trial.suggest_int('epochs', 40, 60, 10)
+    epochs = 40
     model.compile(optimizer = Adam(lr=lr), loss = 'binary_crossentropy', metrics = ['accuracy'])
     
     history = model.fit(X_train, y_train, epochs=epochs, verbose=True, batch_size=5, validation_data=(X_val, y_val))
     
     score = model.evaluate(X_val, y_val, verbose=0)
     
-    # model.save(f"ResNet18_model_{model_index}")
+    model.save(f"ResNet18_model_{model_index}")
     # yield score[1]
     return score[1]
 
@@ -184,13 +152,6 @@ def plot_acc(history):
 
 
 
-# def evaluate_model(X_val, y_val, model):
-#     score = model.evaluate(X_val, y_val)
-#     print("Test loss:", score[0])
-#     print("Test accuracy:", score[1])
-# # evaluate_model(X_val, y_val)
-
-
 
 def train_model(two_training_folders, model_index, trial):
     # two_training_folders=['A','B']
@@ -198,38 +159,14 @@ def train_model(two_training_folders, model_index, trial):
     X_train, X_val, y_train, y_val = training_split(data_train, target_train)
     model=res_net_18()
     history, accuracy, loss =compile_fit_model(model, model_index, X_train, y_train, X_val, y_val, trial)
-    # loss_plot = plot_loss(history)
-    # accuracy_plot = plot_acc(history)
-    # model_evaluation = evaluate_model(X_val, y_val, model)
 
 
 
 def main():
-    # folders = ['A','B','C']
-    # combs = combinations(folders, r=2)
-    # training_folders = list(combs)
     
-    
-
-    # for two_training_folders in training_folders:
-
-        
-        #hyper parameter optimizer optuna
-    study = optuna.create_study(direction='maximize')
-    study.optimize(objective, n_trials=25, timeout=None)
-    print("Number of finished trials: {}".format(len(study.trials)))
-
-    print("Best trial:")
-    trial = study.best_trial
-    print("  Value: {}".format(trial.value))
-    print("  Params: ")
-    for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
-       
-    
-        # model_index = str(two_training_folders[0]+two_training_folders[1])
-        # print(model_index)
-        # train_model(two_training_folders, model_index)
+    model_index = 'AC'
+    objective(model_index)
+ 
     
 
 

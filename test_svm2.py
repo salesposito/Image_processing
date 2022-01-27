@@ -88,18 +88,7 @@ for perturb_type in os.listdir('test'):
             for w in words:
                 # print(w)
                 test_features[i][w] += 1
-        """
-        This error happens when using try: except 
 
-        Traceback (most recent call last):
-        File "test_svm2.py", line 86, in <module>
-            words, distance = vq(des_list[i][1],voc)
-        File "C:\Users\pc1\anaconda3\envs\tf23gpuTHIS\lib\site-packages\scipy\cluster\vq.py", line 199, in vq
-            obs = _asarray_validated(obs, check_finite=check_finite)
-        File "C:\Users\pc1\anaconda3\envs\tf23gpuTHIS\lib\site-packages\scipy\_lib\_util.py", line 265, in _asarray_validated
-            raise ValueError('object arrays are not supported')
-        ValueError: object arrays are not supported
-        """
         scaler = StandardScaler()
         X_test = test_features
         y_test = image_classes
@@ -125,31 +114,3 @@ for perturb_type in os.listdir('test'):
 
 with open('testing_results_svm.pkl', 'wb') as f:
     pickle.dump(data, f)
-# nbr_occurences = np.sum( (test_features > 0) * 1, axis = 0)
-# idf = np.array(np.log((1.0*len(image_paths)+1) / (1.0*nbr_occurences + 1)), 'float32')
-
-# test_features = stdSlr.transform(test_features)
-
-# true_class =  [classes_names[i] for i in image_classes]
-# # Perform the predictions and report predicted class names. 
-# predictions =  [classes_names[i] for i in clf.predict(test_features)]
-
-# print ("true_class ="  + str(true_class))
-# print ("prediction ="  + str(predictions))
-
-
-
-
-# accuracy = accuracy_score(true_class, predictions)
-# print ("accuracy = ", accuracy)
-# cm = confusion_matrix(true_class, predictions)
-# print (cm)
-
-# showconfusionmatrix(cm)
-
-#For classification of unknown files we can print the predictions
-#Print the Predictions 
-# print ("Image =", image_paths)
-# print ("prediction ="  + str(predictions))
-# #np.transpose to save data into columns, otherwise saving as rows
-# np.savetxt('mydata.csv', np.transpose([image_paths, predictions]),fmt='%s', delimiter=',', newline='\n')
